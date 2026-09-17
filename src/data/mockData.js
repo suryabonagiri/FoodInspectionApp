@@ -1,0 +1,13 @@
+import { calculateInspectionStatus } from '../utils/statusEngine'
+
+export const mockRestaurants = [
+  { id: 'sattibabu-biryani-kondapur', name: 'Sattibabu Biryani', normalizedName: 'sattibabu biryani', location: 'Kondapur', normalizedLocation: 'kondapur', authority: 'Cyberabad Municipal Corporation', currentScore: 92, currentStatus: 'PASS', quickInsight: 'High compliance with minor remarks regarding flies and an unlabeled ghee container.' },
+  { id: 'golden-foods-manufacturing-unit-osmania-biscuits-uppal', name: 'Golden Foods Manufacturing Unit - Osmania Biscuits', normalizedName: 'golden foods manufacturing unit osmania biscuits', location: 'Uppal', normalizedLocation: 'uppal', authority: 'Malkajgiri Municipal Corporation', currentScore: 58, currentStatus: 'CRITICAL', quickInsight: 'Critical hygiene concerns were identified, including severe housefly infestation and poor personal hygiene; an improvement notice was issued.' },
+  { id: 'dreamz-cafeteria-bagh-lingampally', name: 'Dreamz Cafeteria', normalizedName: 'dreamz cafeteria', location: 'Bagh Lingampally', normalizedLocation: 'bagh lingampally', authority: 'TG SAFE', currentScore: null, currentStatus: 'NOT_AVAILABLE', quickInsight: 'An inspection event is recorded with a special cafe enforcement drive violation. Further details are not available in the mock dataset.' }
+]
+
+export const mockInspections = [
+  { id: 'sattibabu-2026-06-20', restaurantId: 'sattibabu-biryani-kondapur', inspectionDate: '2026-06-20', location: 'Kondapur', authority: 'Cyberabad Municipal Corporation', hygieneScore: 92, goodPractices: ['Hairnets used', 'Expiry dates maintained'], observations: ['Flies noticed', 'Unlabeled ghee container'], actionTaken: 'Minor remarks issued', sourceHandle: '@CMC_Offcl', sourceUrl: 'https://x.com/CMC_Offcl/status/2068236727815446684' },
+  { id: 'golden-foods-mock', restaurantId: 'golden-foods-manufacturing-unit-osmania-biscuits-uppal', inspectionDate: '', location: 'Uppal', authority: 'Malkajgiri Municipal Corporation', hygieneScore: 58, goodPractices: [], observations: ['Severe housefly infestation', 'Poor personal hygiene'], actionTaken: 'Improvement Notice Issued', sourceHandle: '', sourceUrl: '' },
+  { id: 'dreamz-2026-09-02', restaurantId: 'dreamz-cafeteria-bagh-lingampally', inspectionDate: '2026-09-02', location: 'Bagh Lingampally', authority: 'TG SAFE', hygieneScore: null, goodPractices: [], observations: ['Special cafe enforcement drive violation logged'], actionTaken: '', sourceHandle: '', sourceUrl: '' }
+].map((inspection) => ({ ...inspection, status: calculateInspectionStatus(inspection) }))

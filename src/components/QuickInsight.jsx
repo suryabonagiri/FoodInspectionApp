@@ -1,0 +1,2 @@
+import { Sparkles } from 'lucide-react'
+export default function QuickInsight({ children }) { return <section className="rounded-2xl border border-civic-100 bg-civic-50/70 p-5 sm:p-6"><div className="mb-2 flex items-center gap-2 text-civic-900"><Sparkles size={19} aria-hidden="true" /><h2 className="font-bold">Quick Hygiene Insight</h2></div><p className="leading-7 text-slate-700">{children}</p><p className="mt-3 text-xs text-slate-500">Platform-generated consumer summary based on the inspection record.</p></section> }

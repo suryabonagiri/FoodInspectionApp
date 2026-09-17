@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply min-h-screen bg-stone-50 text-slate-800 antialiased; }
+  button, input, select, textarea { @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-civic-600 focus-visible:ring-offset-2; }
+}
+
+@layer components {
+  .page-shell { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+  .panel { @apply rounded-2xl border border-slate-200 bg-white shadow-card; }
+  .field { @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-civic-600; }
+  .label { @apply mb-1.5 block text-sm font-semibold text-slate-700; }
+  .button-primary { @apply inline-flex items-center justify-center gap-2 rounded-lg bg-civic-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-civic-900 disabled:cursor-not-allowed disabled:opacity-60; }
+  .button-secondary { @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50; }
+}
+
+/* Green and peach foundations, with opaque surfaces for readable civic data. */
+@layer base {
+  body { background: #fff3e9; color: #243e30; }
+  h1, h2, h3 { color: #193d2a; }
+}
+@layer components {
+  .panel { border-color: #e6d8c8; background-color: #fffcf7; }
+  .button-secondary { border-color: #c5d5be; background-color: #f0f5eb; color: #2d593d; }
+  .button-delete { @apply inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-800 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60; }
+}
+.food-hero {
+  background-color: #f6d7c0;
+  background-image: linear-gradient(90deg, rgba(255,238,221,.96) 0%, rgba(255,238,221,.91) 35%, rgba(255,238,221,.24) 65%, rgba(255,238,221,.05) 100%), url('/images/food-table.jpg');
+  background-size: cover;
+  background-position: center;
+}
+.food-hero .hero-heading { max-width: 660px; color: #193d2a; }
+.food-hero .hero-description { max-width: 580px; color: #344b3c; }
+.hero-search { max-width: 770px; }
+.ingredients-section {
+  background-color: #e3ebd9;
+  background-image: linear-gradient(rgba(239,245,230,.91), rgba(239,245,230,.93)), url('/images/ingredients.jpg');
+  background-size: cover;
+  background-position: center;
+}
+header { background-color: #fffcf7 !important; }
+footer { background-color: #e3ebd9 !important; }
+@media (max-width: 900px) {
+  .food-hero { background-image: linear-gradient(rgba(255,238,221,.89), rgba(255,238,221,.89)), url('/images/food-table.jpg'); background-position: 65% center; }
+}
+
+@layer components {
+  .nav-link { @apply border-b-2 border-transparent px-4 py-3 text-center text-sm font-semibold text-civic-700 transition hover:text-civic-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-civic-600 focus-visible:ring-offset-2; }
+  .nav-link-active { border-bottom-color: #2d593d; color: #193d2a; }
+  .nav-contribute { border-radius: .6rem; background-color: #f9dfca; color: #513e2e; }
+  .nav-contribute:hover { background-color: #f4d2b6; }
+  .nav-contribute.nav-link-active { border-bottom-color: #a87148; }
+  .about-notice { background-color: #f9dfca; color: #513e2e; border-left: 3px solid #c38c62; border-radius: 0 .65rem .65rem 0; }
+}
+
+.restaurant-directory { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.75rem; align-items: start; }
+.restaurant-filters { min-width: 0; padding: 1.25rem; background: #fffcf7; border: 1px solid #e6d8c8; border-radius: .75rem; }
+.filter-group { min-width: 0; margin-top: 1.4rem; padding-bottom: 1.4rem; border-bottom: 1px solid #e2e8dc; }
+.filter-group legend { margin-bottom: .75rem; font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .09em; color: #2d593d; }
+.filter-choice { display: flex; align-items: center; gap: .65rem; padding: .55rem .1rem; font-size: .85rem; line-height: 1.4; cursor: pointer; color: #344b3c; }
+.filter-choice input { width: 1rem; height: 1rem; flex-shrink: 0; accent-color: #2d593d; }
+@media (min-width: 768px) {
+  .restaurant-directory { grid-template-columns: 240px minmax(0, 1fr); }
+}
