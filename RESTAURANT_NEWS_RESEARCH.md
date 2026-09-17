@@ -33,3 +33,13 @@ These three leads are research results, separate from the six requested addition
 | Shilpi Elite Restaurant and Bar, Chaitanyapuri | Inspection: 22 October 2024 | Commissioner of Food Safety, Telangana, then @cfs_telangana | Cockroaches, rotten vegetables, missing records and inadequate food segregation reported. | [NDTV report](https://food.ndtv.com/news/food-safety-team-uncovers-major-breaches-in-popular-hyderabad-restaurants-6863473); [embedded government post](https://twitter.com/cfs_telangana/status/1849111716849676394) |
 
 Missing scores and current compliance remain unknown. A historical enforcement report does not establish present operating status. Preserve branch identity before combining these leads with existing histories.
+
+## Follow-up additions — 17 September 2026
+
+Published five more establishments after re-reading the linked reports:
+
+- Hotel Sindhura East Court, New Limra Hotel, and N Village Multicuisine Restaurant: the Siasat September 16 report linked above names these establishments in the licence-suspension action. Their location remains “LB Nagar area”; inspection dates remain unknown. Grouped violations are not assigned individually.
+- Udupi Upahar, Moosapet: the NDTV May 27 report linked above embeds CMC's May 26 inspection post. Records include reported sealing, pests, stale food and storage deficiencies. The raw score of 40/116 is documented in the verification note, not displayed as 40%.
+- KFC, Rajarajeshwari Colony, Kondapur: the NDTV May 5 report linked above quotes the Serilingampally Zonal Commissioner's May 4 post about cooking oil. Post and report dates remain distinct from an unknown inspection date; the final enforcement outcome is unknown.
+
+These are historical government inspection reports carried by news publishers, not customer reviews or confirmation of current compliance. The embedded X links are retained for traceability; direct X retrieval was unavailable. The catalogue now contains 20 sourced establishments plus the existing three demo samples. Shilpi Elite remains an unpublished lead.

@@ -1,4 +1,5 @@
 import { researchedInspections } from './researchedInspections.js'
+import { moreGovernmentReports } from './moreGovernmentReports.js'
 import { additionalGovernmentReports } from './additionalGovernmentReports.js'
 import { slugify, normalizeLocation, normalizeRestaurantName } from '../utils/normalization.js'
 import { calculateInspectionStatus } from '../utils/statusEngine.js'
@@ -51,7 +52,7 @@ const september = [
   verificationNote: `${historicalNote} The exact X post URL was not recovered. No hygiene score was reported.`
 }))
 
-export const publishedInspectionDrafts = [...earlier, mandi, ...september, ...additionalGovernmentReports]
+export const publishedInspectionDrafts = [...earlier, mandi, ...september, ...additionalGovernmentReports, ...moreGovernmentReports]
 export const publishedImportKeys = new Set(publishedInspectionDrafts.map((record) => record.importKey))
 export const publishedInspections = publishedInspectionDrafts.map((record) => ({
   ...record,

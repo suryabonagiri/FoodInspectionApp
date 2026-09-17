@@ -1,26 +1,26 @@
-import { useState } from 'react'
-import { ChevronDown, SlidersHorizontal } from 'lucide-react'
+import { useId, useState } from 'react'
+import { SlidersHorizontal } from 'lucide-react'
+import SideDrawer from './SideDrawer'
 
 export const inspectionStatuses = [
   ['ALL', 'All statuses'], ['PASS', 'Pass'], ['IMPROVEMENT_NOTICE', 'Improvement notice'],
   ['CRITICAL', 'Critical'], ['NOT_AVAILABLE', 'Not available']
 ]
-
-export default function RestaurantFilters({ restaurants, zones, zone, setZone, status, setStatus, recurringOnly, setRecurringOnly, dateStart, setDateStart, dateEnd, setDateEnd, invalidRange, activeCount, reset }) {
-  const [expanded, setExpanded] = useState(false)
-  return <aside aria-label="Restaurant filters" className="restaurant-filters">
-    <div className="flex items-center justify-between gap-3 border-b border-civic-100 pb-4">
-      <h3 className="flex items-center gap-2 text-lg font-extrabold text-civic-900"><SlidersHorizontal size={18} aria-hidden="true" />Filters{activeCount > 0 && <span className="rounded-full bg-civic-100 px-2 py-0.5 text-xs">{activeCount}</span>}</h3>
-      <button onClick={reset} disabled={!activeCount} className="text-xs font-bold text-civic-700 underline underline-offset-4 disabled:opacity-40">Clear all</button>
-    </div>
-    <button className="mt-3 flex w-full items-center justify-between py-2 text-sm font-semibold text-civic-700 md:hidden" aria-expanded={expanded} aria-controls="restaurant-filter-options" onClick={() => setExpanded(!expanded)}>{expanded ? 'Hide filters' : 'Show filters'}<ChevronDown size={16} className={expanded ? 'rotate-180' : ''} aria-hidden="true" /></button>
-    <div id="restaurant-filter-options" className={`${expanded ? 'block' : 'hidden'} md:block`}>
-      <fieldset className="filter-group"><legend>Locality</legend><div className="max-h-56 space-y-1 overflow-y-auto pr-1">
-        {[['', 'All localities'], ...zones.map((item) => [item, item])].map(([value, label]) => <label key={value} className="filter-choice"><input type="radio" name="locality" value={value} checked={zone === value} onChange={() => setZone(value)} /><span className="min-w-0 flex-1 break-words">{label}</span><span className="text-xs text-slate-500">{value ? restaurants.filter((item) => item.location === value).length : restaurants.length}</span></label>)}
-      </div></fieldset>
-      <fieldset className="filter-group"><legend>Inspection status</legend>{inspectionStatuses.map(([value, label]) => <label key={value} className="filter-choice"><input type="radio" name="inspection-status" checked={status === value} onChange={() => setStatus(value)} /><span>{label}</span></label>)}</fieldset>
-      <fieldset className="filter-group"><legend>Inspection date</legend><label className="label text-xs">From<input className="field mt-2 min-w-0" type="date" value={dateStart} aria-invalid={invalidRange} aria-describedby={invalidRange ? 'filter-date-error' : undefined} onChange={(event) => setDateStart(event.target.value)} /></label><label className="label mt-3 text-xs">To<input className="field mt-2 min-w-0" type="date" value={dateEnd} aria-invalid={invalidRange} aria-describedby={invalidRange ? 'filter-date-error' : undefined} onChange={(event) => setDateEnd(event.target.value)} /></label>{invalidRange && <p id="filter-date-error" role="alert" className="mt-2 text-xs leading-5 text-red-700">The end date must be on or after the start date.</p>}</fieldset>
-      <fieldset className="filter-group border-b-0"><legend>Inspection history</legend><label className="filter-choice"><input type="checkbox" checked={recurringOnly} onChange={(event) => setRecurringOnly(event.target.checked)} /><span>Recurring concerns only</span></label><p className="mt-2 text-xs leading-5 text-slate-500">Concerns recorded in at least two inspections.</p></fieldset>
-    </div>
-  </aside>
+function FilterOptions({ restaurants, zones, zone, setZone, status, setStatus, recurringOnly, setRecurringOnly, dateStart, setDateStart, dateEnd, setDateEnd, invalidRange }) {
+  const id = useId()
+  return <div className="filter-options">
+    <label className="filter-label">Locality<select className="field" value={zone} onChange={(event) => setZone(event.target.value)}><option value="">All localities ({restaurants.length})</option>{zones.map((item) => <option key={item} value={item}>{item} ({restaurants.filter((record) => record.location === item).length})</option>)}</select></label>
+    <fieldset className="filter-group"><legend>Inspection status</legend>{inspectionStatuses.map(([value, label]) => <label key={value} className="filter-choice"><input type="radio" name={`${id}-status`} checked={status === value} onChange={() => setStatus(value)} /><span>{label}</span></label>)}</fieldset>
+    <fieldset className="filter-group"><legend>Inspection date</legend><div className="filter-dates"><label className="filter-label">From<input className="field" type="date" value={dateStart} aria-invalid={invalidRange} aria-describedby={invalidRange ? `${id}-error` : undefined} onChange={(event) => setDateStart(event.target.value)} /></label><label className="filter-label">To<input className="field" type="date" value={dateEnd} aria-invalid={invalidRange} aria-describedby={invalidRange ? `${id}-error` : undefined} onChange={(event) => setDateEnd(event.target.value)} /></label></div>{invalidRange && <p id={`${id}-error`} role="alert" className="mt-2 text-xs leading-5 text-red-700">Choose an end date on or after the start date.</p>}<p className="mt-2 text-xs leading-5 text-slate-500">Records with an unknown inspection date are excluded.</p></fieldset>
+    <fieldset className="filter-group"><legend>Inspection history</legend><label className="filter-choice"><input type="checkbox" checked={recurringOnly} onChange={(event) => setRecurringOnly(event.target.checked)} /><span>Recurring concerns</span></label><p className="mt-1 text-xs leading-5 text-slate-500">Recorded in two or more inspections.</p></fieldset>
+  </div>
+}
+export default function RestaurantFilters({ activeCount, reset, resultCount, ...props }) {
+  const [open, setOpen] = useState(false)
+  const clear = <button type="button" onClick={reset} disabled={!activeCount} className="filter-reset">Reset</button>
+  return <>
+    <aside aria-label="Restaurant filters" className="restaurant-filters"><div className="filter-heading"><h2><SlidersHorizontal size={16} aria-hidden="true" />Filters{activeCount > 0 && <span className="filter-count">{activeCount}</span>}</h2>{clear}</div><FilterOptions {...props} /></aside>
+    <button className="mobile-filter-button button-secondary" type="button" onClick={() => setOpen(true)} aria-expanded={open}><SlidersHorizontal size={16} aria-hidden="true" />Filters{activeCount > 0 && <span className="filter-count">{activeCount}</span>}</button>
+    <SideDrawer open={open} onClose={() => setOpen(false)} title="Filter restaurants" footer={<div className="flex items-center gap-4">{clear}<button className="button-primary flex-1" onClick={() => setOpen(false)} disabled={props.invalidRange}>Show {resultCount} {resultCount === 1 ? 'restaurant' : 'restaurants'}</button></div>}><FilterOptions {...props} /></SideDrawer>
+  </>
 }

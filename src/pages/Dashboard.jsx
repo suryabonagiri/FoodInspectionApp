@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { firebaseConfigured } from '../lib/firebase'
-import { Search, Building2, X } from 'lucide-react'
+import { Search, Building2, X, ArrowRight, Download } from 'lucide-react'
 import { downloadRecords } from '../utils/exportRecords'
 import RestaurantFilters, { inspectionStatuses } from '../components/RestaurantFilters'
 import RestaurantCard from '../components/RestaurantCard'
@@ -17,8 +17,8 @@ export default function Dashboard({ restaurants, inspections, loading, navigate 
     return { restaurant, history, latest, recurring: detectRecurringViolations(history) }
   }).filter(({ restaurant, history, recurring }) => {
     const haystack = [restaurant.name, restaurant.location, restaurant.authority, ...history.flatMap((record) => [...(record.observations || []), ...(record.goodPractices || [])])].join(' ').toLowerCase()
-    const dateMatch = history.some((record) => (!dateStart || record.inspectionDate >= dateStart) && (!dateEnd || record.inspectionDate <= dateEnd))
-    return (!query || haystack.includes(query.toLowerCase())) && (!zone || restaurant.location === zone) && (status === 'ALL' || restaurant.currentStatus === status) && (!recurringOnly || recurring.length) && (!dateStart && !dateEnd || dateMatch)
+    const dateMatch = history.some((record) => Boolean(record.inspectionDate) && (!dateStart || record.inspectionDate >= dateStart) && (!dateEnd || record.inspectionDate <= dateEnd))
+    return !invalidRange && (!query || haystack.includes(query.toLowerCase())) && (!zone || restaurant.location === zone) && (status === 'ALL' || restaurant.currentStatus === status) && (!recurringOnly || recurring.length) && (!dateStart && !dateEnd || dateMatch)
   }).sort((a, b) => sort === 'name' ? a.restaurant.name.localeCompare(b.restaurant.name) : (b.latest?.inspectionDate || '').localeCompare(a.latest?.inspectionDate || '') || a.restaurant.name.localeCompare(b.restaurant.name)), [restaurants, inspections, query, zone, status, recurringOnly, dateStart, dateEnd, sort])
   const reset = () => { setQuery(''); setZone(''); setStatus('ALL'); setRecurringOnly(false); setDateStart(''); setDateEnd('') }
   const activeFilters = [
@@ -29,19 +29,19 @@ export default function Dashboard({ restaurants, inspections, loading, navigate 
     dateEnd && { label: `To: ${dateEnd}`, clear: () => setDateEnd('') },
     recurringOnly && { label: 'Recurring concerns', clear: () => setRecurringOnly(false) }
   ].filter(Boolean)
-  return <main>
-    <section className="food-hero border-b border-civic-100"><div className="page-shell py-12 sm:py-16"><p className="mb-3 text-sm font-bold uppercase tracking-[0.18em] text-civic-700">Independent civic data interface</p><h1 className="hero-heading max-w-3xl text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Check restaurant hygiene before you dine.</h1><p className="hero-description mt-5 max-w-2xl text-lg leading-8 text-slate-600">See Hyderabad restaurant inspection findings, hygiene scores and official sources in one place.</p><div className="panel hero-search mt-8 p-3 sm:flex sm:items-center"><label className="flex flex-1 items-center gap-3 px-3"><Search className="text-civic-700" aria-hidden="true" /><span className="sr-only">Search restaurant, locality or violation</span><input value={query} onChange={(e) => setQuery(e.target.value)} className="w-full bg-transparent py-2 text-base placeholder:text-slate-400" placeholder="Search restaurant, locality or violation..." /></label><button onClick={() => document.getElementById('restaurants')?.scrollIntoView({ behavior: 'smooth' })} className="button-primary mt-2 w-full sm:mt-0 sm:w-auto">Search records</button></div></div></section>
-    <section id="restaurants" className="page-shell scroll-mt-4 py-10">
-      <div className="mb-7"><p className="text-sm font-bold uppercase tracking-wider text-civic-700">Inspection directory</p><h2 className="mt-1 text-2xl font-extrabold text-slate-900">Restaurant records</h2></div>
+  return <main id="main-content" tabIndex={-1}>
+    <section className="food-hero border-b border-civic-100"><div className="page-shell hero-layout"><div><p className="hero-eyebrow">Hyderabad · Food safety records</p><h1 className="hero-heading">A little clarity.<br className="sm:hidden" /> Before you dine.</h1><p className="hero-description">Explore government inspection findings, with sources you can check.</p></div><form className="hero-search" onSubmit={(event) => { event.preventDefault(); document.getElementById('restaurants')?.scrollIntoView({ behavior: 'smooth' }) }}><label className="search-input"><Search size={19} aria-hidden="true" /><span className="sr-only">Search restaurant, locality or violation</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Restaurant, locality or concern" type="search" /></label><button type="submit" className="search-submit" aria-label="Search restaurant records"><ArrowRight size={20} /></button></form></div></section>
+    <section id="restaurants" className="page-shell directory-section">
+      <div className="directory-heading"><h2>Restaurant directory</h2><p>Historical findings, not a current safety rating.</p></div>
       <div className="restaurant-directory">
-        <RestaurantFilters {...{ restaurants, zones, zone, setZone, status, setStatus, recurringOnly, setRecurringOnly, dateStart, setDateStart, dateEnd, setDateEnd, invalidRange, reset }} activeCount={activeFilters.length} />
+        <RestaurantFilters {...{ restaurants, zones, zone, setZone, status, setStatus, recurringOnly, setRecurringOnly, dateStart, setDateStart, dateEnd, setDateEnd, invalidRange, reset }} activeCount={activeFilters.length} resultCount={rows.length} />
         <div className="min-w-0">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-4 border-b border-civic-100 pb-5">
+          <div className="results-toolbar">
             <p role="status" aria-live="polite" className="text-sm text-slate-600"><strong className="text-civic-900">{loading ? '…' : rows.length}</strong> {rows.length === 1 ? 'restaurant' : 'restaurants'} found</p>
-            <div className="flex flex-wrap items-center gap-3"><label className="flex items-center gap-2 text-sm font-semibold">Sort by<select className="field w-auto" value={sort} onChange={(event) => setSort(event.target.value)}><option value="latest">Latest inspection</option><option value="name">Restaurant name</option></select></label><button className="text-xs font-semibold text-civic-700 underline underline-offset-4 disabled:opacity-40" disabled={loading || !rows.length || invalidRange} onClick={() => downloadRecords(rows)}>Export CSV</button></div>
+            <div className="results-actions"><label><span className="sr-only">Sort restaurants</span><select className="field w-auto" value={sort} onChange={(event) => setSort(event.target.value)}><option value="latest">Latest inspection</option><option value="name">Restaurant name</option></select></label><button className="text-xs font-semibold text-civic-700 underline underline-offset-4 disabled:opacity-40" disabled={loading || !rows.length || invalidRange} onClick={() => downloadRecords(rows)} aria-label="Export filtered restaurants as CSV"><Download size={16} aria-hidden="true" /><span className="hidden sm:inline">Export</span></button></div>
           </div>
           {activeFilters.length > 0 && <div aria-label="Applied filters" className="mb-5 flex flex-wrap gap-2">{activeFilters.map((filter) => <button key={filter.label} onClick={filter.clear} className="inline-flex max-w-full items-center gap-2 rounded-full border border-civic-100 bg-civic-50 px-3 py-1.5 text-xs font-semibold text-civic-700" aria-label={`Remove ${filter.label} filter`}><span className="truncate">{filter.label}</span><X size={13} className="shrink-0" aria-hidden="true" /></button>)}</div>}
-          {loading ? <div className="panel p-10 text-center text-slate-600">Loading inspection records…</div> : rows.length ? <div className="grid gap-5 xl:grid-cols-2">{rows.map(({ restaurant, latest, recurring }) => <RestaurantCard key={restaurant.id} restaurant={restaurant} inspection={latest} recurring={recurring} navigate={navigate} />)}</div> : <div className="panel p-10 text-center"><Building2 className="mx-auto text-slate-400" size={32} /><h3 className="mt-3 font-bold">No inspection records found</h3><p className="mt-1 text-sm text-slate-600">Try changing the search words or clearing the filters.</p><button className="button-secondary mt-5" onClick={reset}>Clear all filters</button></div>}
+          {loading ? <div className="panel p-10 text-center text-slate-600">Loading inspection records…</div> : rows.length ? <div className="restaurant-grid">{rows.map(({ restaurant, latest, recurring }) => <RestaurantCard key={restaurant.id} restaurant={restaurant} inspection={latest} recurring={recurring} navigate={navigate} />)}</div> : <div className="panel p-10 text-center"><Building2 className="mx-auto text-slate-400" size={32} /><h3 className="mt-3 font-bold">No inspection records found</h3><p className="mt-1 text-sm text-slate-600">Try changing the search words or clearing the filters.</p><button className="button-secondary mt-5" onClick={reset}>Clear all filters</button></div>}
         </div>
       </div>
     </section>

@@ -28,10 +28,10 @@ test('news-derived records preserve unknown inspection dates, branch details and
   assert.ok(csv.includes('"","2026-09-16"'))
 })
 
-test('published batch has fifteen traceable establishments and preserves unknown scores', () => {
-  assert.equal(publishedRestaurants.length, 15)
-  assert.equal(new Set(publishedRestaurants.map((item) => item.id)).size, 15)
-  assert.equal(publishedInspections.filter((item) => item.originalPostUrl).length, 5)
+test('published batch has twenty traceable establishments and preserves unknown scores', () => {
+  assert.equal(publishedRestaurants.length, 20)
+  assert.equal(new Set(publishedRestaurants.map((item) => item.id)).size, 20)
+  assert.equal(publishedInspections.filter((item) => item.originalPostUrl).length, 7)
   for (const record of publishedInspections) {
     assert.ok(publishedRestaurants.some((item) => item.id === record.restaurantId))
     assert.ok(record.sourceUrl.startsWith('https://'))
@@ -55,8 +55,8 @@ test('previously saved drafts are merged without duplication or loss of trash st
   delete previous.originalPostUrl
   const saved = { restaurants: [{ ...restaurant, deletedAt: '2026-09-15' }], inspections: [previous] }
   const merged = mergeCatalog(initial, saved)
-  assert.equal(merged.restaurants.length, 15)
-  assert.equal(merged.inspections.length, 15)
+  assert.equal(merged.restaurants.length, 20)
+  assert.equal(merged.inspections.length, 20)
   assert.equal(merged.restaurants.find((item) => item.id === restaurant.id).deletedAt, '2026-09-15')
   assert.equal(merged.inspections[0].id, 'previous-admin-uuid')
   assert.ok(merged.inspections[0].originalPostUrl)
@@ -68,10 +68,27 @@ test('shared evidence URLs retain separate businesses and latest inspections dri
   const restaurant = publishedRestaurants.at(-1)
   const newer = { id: 'follow-up', restaurantId: restaurant.id, inspectionDate: '2026-09-16', hygieneScore: 90, status: 'PASS', observations: [], actionTaken: 'Compliance recorded' }
   const merged = mergeCatalog(initial, { restaurants: [{ ...restaurant, currentStatus: 'CRITICAL' }], inspections: [newer] })
-  assert.equal(merged.inspections.length, 16)
+  assert.equal(merged.inspections.length, 21)
   assert.equal(merged.inspections.filter((item) => item.inspectionDate === '2026-09-10').length, 4)
   const updated = merged.restaurants.find((item) => item.id === restaurant.id)
   assert.equal(updated.currentScore, 90)
   assert.equal(updated.currentStatus, 'PASS')
   assert.ok(!updated.quickInsight.includes('suspension'))
+})
+
+ test('new reports retain branch identity, unknown dates and non-percentage scores', () => {
+  const udupi = publishedInspections.find((record) => record.restaurantName === 'Udupi Upahar')
+  assert.equal(udupi.hygieneScore, null)
+  assert.equal(udupi.inspectionDate, '2026-05-26')
+  assert.equal(udupi.status, 'CRITICAL')
+  const kfc = publishedInspections.find((record) => record.restaurantName === 'KFC')
+  assert.equal(kfc.location, 'Rajarajeshwari Colony, Kondapur')
+  assert.equal(kfc.inspectionDate, '')
+  assert.equal(kfc.status, 'NOT_AVAILABLE')
+  for (const name of ['Hotel Sindhura East Court', 'New Limra Hotel', 'N Village Multicuisine Restaurant']) {
+    const record = publishedInspections.find((item) => item.restaurantName === name)
+    assert.deepEqual(record.observations, [])
+    assert.equal(record.reportDate, '2026-09-16')
+    assert.equal(record.status, 'CRITICAL')
+  }
 })
